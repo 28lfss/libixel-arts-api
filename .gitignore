@@ -1,0 +1,68 @@
+# Gradle
+
+.gradle/
+build/
+
+# IntelliJ IDEA
+
+.idea/
+*.iml
+out/
+
+# VSCode
+
+.vscode/
+
+# OS
+
+.DS_Store
+Thumbs.db
+
+# Logs
+
+logs/
+*.log
+
+# Environment files
+
+.env
+
+# Java
+
+*.class
+
+# Spring Boot
+
+target/
+
+# Generated files
+
+bin/
+
+# Docker
+
+docker-data/
+postgres_data/
+
+# Flyway temp
+
+flyway.conf
+
+# Local configs
+
+application-local.properties
+application-local.yml
+
+# Linux temp
+
+*~
+
+# Package files
+
+*.jar
+*.war
+*.ear
+
+# IntelliJ HTTP Client
+
+.httpRequests/
