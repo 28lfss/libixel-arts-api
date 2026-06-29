@@ -16,6 +16,18 @@ Backend API for a 32x32 pixel art social platform.
 - PostgreSQL
 - Docker Compose
 
+## How To Run
+
+- Start database with docker compose
+```declarative
+docker compose up -d
+```
+
+- Run application
+```java
+./gradlew bootRun
+```
+
 ## License
 
 This project is licensed under the PolyForm Noncommercial License 1.0.0.
