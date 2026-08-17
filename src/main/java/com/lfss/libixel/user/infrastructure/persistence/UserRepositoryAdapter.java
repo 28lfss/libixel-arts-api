@@ -4,6 +4,8 @@ import com.lfss.libixel.user.domain.User;
 import com.lfss.libixel.user.domain.UserRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public class UserRepositoryAdapter implements UserRepository {
 
@@ -26,5 +28,10 @@ public class UserRepositoryAdapter implements UserRepository {
     @Override
     public User save(User user) {
         return springDataUserRepository.save(user);
+    }
+
+    @Override
+    public Optional<User> findByUsername(String username) {
+        return springDataUserRepository.findByUsername(username);
     }
 }

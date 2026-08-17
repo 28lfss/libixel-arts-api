@@ -13,4 +13,7 @@ public final class ProblemTypes {
 
     public static final URI ALREADY_EXISTS =
             URI.create("https://api.libixel.dev/problems/already-exist");
+
+    public static final URI INVALID_CREDENTIALS =
+            URI.create("https://api.libixel.dev/problems/invalid-credentials");
 }

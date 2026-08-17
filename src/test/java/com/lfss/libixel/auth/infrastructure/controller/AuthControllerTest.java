@@ -1,9 +1,11 @@
 package com.lfss.libixel.auth.infrastructure.controller;
 
 import com.lfss.libixel.auth.application.dto.RegisterUserResponse;
+import com.lfss.libixel.auth.application.usecase.LoginUserUseCase;
 import com.lfss.libixel.auth.application.usecase.RegisterUserUseCase;
 import com.lfss.libixel.config.SecurityConfig;
 import com.lfss.libixel.shared.exceptions.EmailAlreadyUsedException;
+import com.lfss.libixel.shared.exceptions.InvalidCredentialException;
 import com.lfss.libixel.shared.exceptions.UsernameAlreadyUsedException;
 import com.lfss.libixel.shared.infrastructure.api.GlobalExceptionHandler;
 import org.junit.jupiter.api.Test;
@@ -33,6 +35,9 @@ class AuthControllerTest {
 
     @MockitoBean
     private RegisterUserUseCase registerUserUseCase;
+
+    @MockitoBean
+    private LoginUserUseCase loginUserUseCase;
 
     @Test
     void register_whenRequestIsValid_returnsCreated() throws Exception {
@@ -70,6 +75,7 @@ class AuthControllerTest {
                                 }
                                 """))
                 .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.type").value("https://api.libixel.dev/problems/validation"))
                 .andExpect(jsonPath("$.title").value("Validation failed"))
                 .andExpect(jsonPath("$.errors").isArray());
 
@@ -91,7 +97,8 @@ class AuthControllerTest {
                                 }
                                 """))
                 .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.title").value("Registration failed"))
+                .andExpect(jsonPath("$.type").value("https://api.libixel.dev/problems/already-exists"))
+                .andExpect(jsonPath("$.title").value("Already exists"))
                 .andExpect(jsonPath("$.error.field").value("username"))
                 .andExpect(jsonPath("$.error.message").value("Username is already in use."));
     }
@@ -111,8 +118,29 @@ class AuthControllerTest {
                                 }
                                 """))
                 .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.title").value("Registration failed"))
+                .andExpect(jsonPath("$.type").value("https://api.libixel.dev/problems/already-exists"))
+                .andExpect(jsonPath("$.title").value("Already exists"))
                 .andExpect(jsonPath("$.error.field").value("email"))
                 .andExpect(jsonPath("$.error.message").value("Email is already in use."));
+    }
+
+    @Test
+    void login_whenCredentialsAreInvalid_returnsUnauthorizedProblemWithoutLeakingCause() throws Exception {
+        when(loginUserUseCase.execute(any()))
+                .thenThrow(new InvalidCredentialException());
+
+        mockMvc.perform(post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "username": "pixel_artist",
+                                  "password": "wrongpass"
+                                }
+                                """))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.type").value("https://api.libixel.dev/problems/invalid-credentials"))
+                .andExpect(jsonPath("$.title").value("Invalid credentials"))
+                .andExpect(jsonPath("$.detail").value("Username or password is incorrect."))
+                .andExpect(jsonPath("$.error").doesNotExist());
     }
 }

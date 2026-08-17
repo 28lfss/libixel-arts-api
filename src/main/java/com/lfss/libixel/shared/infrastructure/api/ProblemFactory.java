@@ -5,13 +5,17 @@ import org.springframework.http.ProblemDetail;
 
 import java.util.List;
 
-public class ProblemFactory {
+public final class ProblemFactory {
+
+    private ProblemFactory() {}
 
     public static ProblemDetail validation(List<ValidationError> errors) {
-        ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.BAD_REQUEST,
+                "One or more fields are invalid."
+        );
 
         problem.setTitle("Validation failed");
-        problem.setDetail("One or more fields are invalid.");
         problem.setType(ProblemTypes.VALIDATION);
         problem.setProperty("errors", errors);
 
@@ -19,12 +23,26 @@ public class ProblemFactory {
     }
 
     public static ProblemDetail alreadyExists(ValidationError error) {
-        ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.CONFLICT);
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.CONFLICT,
+                "A value is already in use."
+        );
 
-        problem.setTitle("Registration failed");
-        problem.setDetail("Credential is already in use.");
+        problem.setTitle("Already exists");
         problem.setType(ProblemTypes.ALREADY_EXISTS);
         problem.setProperty("error", error);
+
+        return problem;
+    }
+
+    public static ProblemDetail invalidCredentials() {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.UNAUTHORIZED,
+                "Username or password is incorrect."
+        );
+
+        problem.setTitle("Invalid credentials");
+        problem.setType(ProblemTypes.INVALID_CREDENTIALS);
 
         return problem;
     }
